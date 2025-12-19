@@ -10,6 +10,7 @@
     <style>
         p {
             text-align: center;
+            color: #cbd5e1;
         }
         nav p {
             margin-bottom: 10px;
@@ -17,31 +18,45 @@
 
         nav a {
             text-decoration: none;
-            color: #4CAF50;
+            color: #10b981;
             font-weight: bold;
             margin: 0 8px;
             transition: color 0.3s ease;
         }
 
         nav a:hover {
-            color: #2e7d32;
+            color: #34d399;
             text-decoration: underline;
         }
 
         footer {
-            background-color: #222;
-            color: #ccc;
+            background-color: #0f172a;
+            color: #94a3b8;
             text-align: center;
             padding: 15px;
             position: fixed;
             bottom: 0;
             width: 100%;
             font-size: 0.9em;
-            box-shadow: 0 -2px 6px rgba(0,0,0,0.2);
+            box-shadow: 0 -2px 6px rgba(0,0,0,0.4);
+            border-top: 2px solid #334155;
         }
 
         footer p {
             margin: 0;
+        }
+        
+        b {
+            color: #e2e8f0;
+        }
+        
+        .nav-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #0f172a;
+            border-radius: 8px;
+            border: 1px solid #334155;
         }
     </style>
 </head>
@@ -66,13 +81,16 @@
                 </b>
             </p>
         </section>
-        <nav>
-            <p>
-                <a href="#">Home</a> |
-                <a href="About Us.html">About Us</a> |
-                <a href="Departments.html">Departments</a> |
-                <a href="#">Contact Us</a>
-            </p>
+        <div class="nav-container">
+            <nav>
+                <p>
+                    <a href="#">Home</a> |
+                    <a href="About Us.html">About Us</a> |
+                    <a href="Departments.html">Departments</a> |
+                    <a href="#">Contact Us</a>
+                </p>
+            </nav>
+        </div>
     </main>
     <footer>
         <p>&copy; 2015 St. Teresa's School. All rights reserved.</p>

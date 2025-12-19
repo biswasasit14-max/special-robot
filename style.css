@@ -2,8 +2,8 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #0f172a;
-    color: #e2e8f0;
+    background-color: #000000;
+    color: #e0e0e0;
     line-height: 1.6;
     display: flex;
     flex-direction: column;
@@ -11,23 +11,23 @@ body {
 }
 
 header {
-    background-color: #065f46;
-    color: white;
+    background-color: #003300;
+    color: #d4edda;
     padding: 20px;
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    border-bottom: 2px solid #10b981;
+    border-bottom: 2px solid #006400;
 }
 
 header h1 {
     margin: 0;
     font-size: 2em;
-    color: #d1fae5;
+    color: #90ee90;
 }
 
 hr {
     border: none;
-    border-top: 2px solid #334155;
+    border-top: 2px solid #333333;
     margin: 0;
 }
 
@@ -35,7 +35,7 @@ img {
     border-radius: 50%;
     box-shadow: 0 2px 6px rgba(0,0,0,0.4);
     margin-top: 15px;
-    border: 2px solid #334155;
+    border: 2px solid #333333;
 }
 
 main {
@@ -43,7 +43,7 @@ main {
     padding: 20px;
     max-width: 900px;
     margin: auto;
-    background-color: #1e293b;
+    background-color: #0a0a0a;
     border-radius: 8px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -53,14 +53,14 @@ main {
 section {
     margin-bottom: 30px;
     padding: 15px;
-    background-color: #0f172a;
+    background-color: #111111;
     border-radius: 6px;
-    border: 1px solid #334155;
+    border: 1px solid #333333;
 }
 
 h2 {
-    color: #10b981;
-    border-bottom: 2px solid #10b981;
+    color: #32cd32;
+    border-bottom: 2px solid #32cd32;
     padding-bottom: 5px;
     margin-bottom: 15px;
 }
@@ -68,19 +68,23 @@ h2 {
 p {
     font-size: 1.05em;
     text-align: justify;
-    color: #cbd5e1;
+    color: #cccccc;
 }
 
 footer {
-    background-color: #0f172a;
-    color: #94a3b8;
+    background-color: #000000;
+    color: #888888;
     text-align: center;
     padding: 15px;
     font-size: 0.9em;
     box-shadow: 0 -2px 6px rgba(0,0,0,0.4);
-    border-top: 2px solid #334155;
+    border-top: 2px solid #333333;
 }
 
 footer p {
     margin: 0;
+}
+
+b {
+    color: #e0e0e0;
 }

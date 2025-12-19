@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Layout */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: auto 1fr;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: #1e293b;
+            grid-column: 1;
+            grid-row: 1 / -1;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .logo {
+            padding: 25px 20px;
+            border-bottom: 1px solid #334155;
+            text-align: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo span {
+            color: #38bdf8;
+        }
+        
+        /* Navigation */
+        .nav-menu {
+            padding: 20px 0;
+            flex: 1;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-item:hover {
+            background: #334155;
+            color: #ffffff;
+            border-left-color: #60a5fa;
+        }
+        
+        .nav-item.active {
+            background: #334155;
+            color: #60a5fa;
+            border-left-color: #60a5fa;
+            font-weight: 600;
+        }
+        
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        /* User Panel */
+        .user-panel {
+            padding: 20px;
+            border-top: 1px solid #334155;
+            background: #1e293b;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-details h4 {
+            font-size: 0.95rem;
+            color: #ffffff;
+        }
+        
+        .user-details p {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        
+        /* Header */
+        .header {
+            background: #1e293b;
+            grid-column: 2;
+            padding: 20px 30px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        
+        .header-left h2 {
+            color: #f1f5f9;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .header-left p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Header Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .search-box {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+        
+        .notification-bell {
+            position: relative;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .notification-bell:hover {
+            background: #334155;
+            color: #60a5fa;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            grid-column: 2;
+            padding: 30px;
+            overflow-y: auto;
+            background: #0f172a;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: #475569;
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-title {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+        
+        .icon-server { background: rgba(37, 99, 235, 0.1); color: #60a5fa; }
+        .icon-users { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .icon-performance { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .icon-uptime { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 5px;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+        
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            color: #f1f5f9;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-btn {
+            background: #334155;
+            border: none;
+            color: #cbd5e1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .chart-btn:hover {
+            background: #475569;
+            color: #ffffff;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .service-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .service-info h4 {
+            color: #f1f5f9;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .service-info p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        
+        .service-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+        
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-online {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .status-offline {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Recent Activity */
+        .activity-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .activity-title {
+            color: #f1f5f9;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .activity-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.info { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+        .activity-icon.success { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .activity-icon.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .activity-icon.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        
+        .activity-content h5 {
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            margin-bottom: 5px;
+        }
+        
+        .activity-content p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .activity-time {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+        
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .action-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-btn:hover {
+            background: #334155;
+            border-color: #475569;
+            transform: translateY(-3px);
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .action-btn:nth-child(1) .action-icon { background: rgba(37, 99, 235, 0.1); color: #60a5fa; }
+        .action-btn:nth-child(2) .action-icon { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .action-btn:nth-child(3) .action-icon { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .action-btn:nth-child(4) .action-icon { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+        
+        .action-text {
+            font-weight: 500;
+            color: #f1f5f9;
+            text-align: center;
+        }
+        
+        /* Footer */
+        .footer {
+            grid-column: 1 / -1;
+            background: #1e293b;
+            padding: 20px 30px;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: #60a5fa;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+            }
+            
+            .sidebar {
+                grid-column: 1;
+                grid-row: 1;
+                border-right: none;
+                border-bottom: 1px solid #334155;
+            }
+            
+            .header {
+                grid-column: 1;
+                grid-row: 2;
+            }
+            
+            .main-content {
+                grid-column: 1;
+                grid-row: 3;
+            }
+            
+            .footer {
+                grid-column: 1;
+            }
+            
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0;
+            }
+            
+            .nav-item {
+                padding: 15px 20px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                white-space: nowrap;
+            }
+            
+            .nav-item.active {
+                border-left: none;
+                border-bottom-color: #60a5fa;
+            }
+            
+            .nav-item:hover {
+                border-left: none;
+                border-bottom-color: #60a5fa;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                width: 200px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .header-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .footer {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card, .chart-card, .service-card, .activity-card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        /* Status Pulse */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status-pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1><i class="fas fa-server"></i> <span>SYSTEM</span>DASH</h1>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="index.html" class="nav-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-server"></i>
+                    <span>Services</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Security</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-life-ring"></i>
+                    <span>Support</span>
+                </a>
+            </nav>
+            
+            <div class="user-panel">
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div class="user-details">
+                        <h4>John Doe</h4>
+                        <p>System Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h2><i class="fas fa-tachometer-alt"></i> System Dashboard</h2>
+                <p>Real-time monitoring and management console</p>
+            </div>
+            
+            <div class="header-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search services, logs, metrics...">
+                </div>
+                
+                <button class="notification-bell">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <div class="user-avatar small">JD</div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Server Status</div>
+                        <div class="stat-icon icon-server">
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="server-status">Operational</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>99.9% uptime</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Active Users</div>
+                        <div class="stat-icon icon-users">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="active-users">1,247</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>+12% today</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Performance</div>
+                        <div class="stat-icon icon-performance">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="performance">96.5%</div>
+                    <div class="stat-trend trend-down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>-2.3% from peak</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Uptime</div>
+                        <div class="stat-icon icon-uptime">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value" id="uptime">30d 14h</div>
+                    <div class="stat-trend trend-up">
+                        <i class="fas fa-check-circle"></i>
+                        <span>No incidents</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">System Load (24h)</div>
+                        <div class="chart-actions">
+                            <button class="chart-btn">1D</button>
+                            <button class="chart-btn active">7D</button>
+                            <button class="chart-btn">30D</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="load-chart">
+                        <!-- Chart will be drawn here -->
+                        <div class="chart-placeholder">
+                            <div class="chart-bars">
+                                <div class="chart-bar" style="height: 60%; background: #3b82f6;"></div>
+                                <div class="chart-bar" style="height: 45%; background: #3b82f6;"></div>
+                                <div class="chart-bar" style="height: 75%; background: #3b82f6;"></div>
+                                <div class="chart-bar" style="height: 30%; background: #3b82f6;"></div>
+                                <div class="chart-bar" style="height: 85%; background: #3b82f6;"></div>
+                                <div class="chart-bar" style="height: 65%; background: #3b82f6;"></div>
+                                <div class="chart-bar" style="height: 40%; background: #3b82f6;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">Service Health</div>
+                        <div class="chart-actions">
+                            <button class="chart-btn active">Live</button>
+                            <button class="chart-btn">History</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" id="health-chart">
+                        <!-- Health chart placeholder -->
+                        <div class="health-meters">
+                            <div class="health-meter">
+                                <div class="meter-label">API Gateway</div>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 95%; background: #10b981;"></div>
+                                </div>
+                                <div class="meter-value">95%</div>
+                            </div>
+                            <div class="health-meter">
+                                <div class="meter-label">Database</div>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 88%; background: #10b981;"></div>
+                                </div>
+                                <div class="meter-value">88%</div>
+                            </div>
+                            <div class="health-meter">
+                                <div class="meter-label">Cache</div>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 92%; background: #10b981;"></div>
+                                </div>
+                                <div class="meter-value">92%</div>
+                            </div>
+                            <div class="health-meter">
+                                <div class="meter-label">Storage</div>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" style="width: 78%; background: #f59e0b;"></div>
+                                </div>
+                                <div class="meter-value">78%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Services Grid -->
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background: rgba(37, 99, 235, 0.1); color: #60a5fa;">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="service-info">
+                            <h4>API Gateway</h4>
+                            <p>Main API endpoint service</p>
+                        </div>
+                    </div>
+                    <div class="service-metrics">
+                        <div class="metric">
+                            <div class="metric-value">12.5k</div>
+                            <div class="metric-label">Requests/min</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">45ms</div>
+                            <div class="metric-label">Avg. Latency</div>
+                        </div>
+                    </div>
+                    <div class="service-status status-online">
+                        <i class="fas fa-circle status-pulse"></i>
+                        <span>Operational</span>
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="service-info">
+                            <h4>Database Cluster</h4>
+                            <p>Primary database service</p>
+                        </div>
+                    </div>
+                    <div class="service-metrics">
+                        <div class="metric">
+                            <div class="metric-value">98.7%</div>
+                            <div class="metric-label">Hit Rate</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">2.3GB</div>
+                            <div class="metric-label">Memory Usage</div>
+                        </div>
+                    </div>
+                    <div class="service-status status-online">
+                        <i class="fas fa-circle status-pulse"></i>
+                        <span>Replicating</span>
+                    </div>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fas fa-hdd"></i>
+                        </div>
+                        <div class="service-info">
+                            <h4>File Storage</h4>
+                            <p>Object storage service</p>
+                        </div>
+                    </div>
+                    <div class="service-metrics">
+                        <div class="metric">
+                            <div class="metric-value">78%</div>
+                            <div class="metric-label">Capacity</div>
+                        </div>
+                        <div class="metric">
+                            <div class="metric-value">245MB/s</div>
+                            <div class="metric-label">Throughput</div>
+                        </div>
+                    </div>
+                    <div class="service-status status-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>High Load</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="activity-card">
+                <div class="activity-header">
+                    <div class="activity-title">Recent Activity</div>
+                    <button class="chart-btn">View All</button>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h5>Backup completed successfully</h5>
+                            <p>System backup for database cluster completed without errors</p>
+                            <div class="activity-time">10 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon info">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h5>Performance optimization</h5>
+                            <p>API Gateway response times improved by 15% after optimization</p>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h5>Storage threshold alert</h5>
+                            <p>File storage service approaching 80% capacity limit</p>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon error">
+                            <i class="fas fa-times"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h5>Cache service restart</h5>
+                            <p>Cache layer automatically restarted due to memory leak</p>
+                            <div class="activity-time">4 hours ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h5>New user registration</h5>
+                            <p>15 new users registered in the last hour</p>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <a href="#" class="action-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="action-text">Refresh Data</div>
+                </a>
+                
+                <a href="index.html" class="action-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="action-text">View Analytics</div>
+                </a>
+                
+                <a href="#" class="action-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <div class="action-text">Export Report</div>
+                </a>
+                
+                <a href="#" class="action-btn">
+                    <div class="action-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <div class="action-text">System Settings</div>
+                </a>
+            </div>
+        </main>
+        
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-copyright">
+                © 2024 SystemDash v2.1.0 | Last updated: <span id="current-time">Loading...</span>
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Documentation</a>
+                <a href="#">Support</a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Update current time
+            function updateTime() {
+                const now = new Date();
+                document.getElementById('current-time').textContent = 
+                    now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            updateTime();
+            setInterval(updateTime, 60000);
+            
+            // Simulate live data updates
+            function updateStats() {
+                // Update server status randomly
+                const statuses = ['Operational', 'Stable', 'Normal'];
+                const status = statuses[Math.floor(Math.random() * statuses.length)];
+                document.getElementById('server-status').textContent = status;
+                
+                // Update active users with slight variation
+                const users = parseInt(document.getElementById('active-users').textContent.replace(',', ''));
+                const variation = Math.floor(Math.random() * 21) - 10; // -10 to +10
+                const newUsers = Math.max(1200, users + variation);
+                document.getElementById('active-users').textContent = newUsers.toLocaleString();
+                
+                // Update performance with slight variation
+                const perf = parseFloat(document.getElementById('performance').textContent.replace('%', ''));
+                const perfVariation = (Math.random() * 2) - 1; // -1 to +1
+                const newPerf = Math.min(100, Math.max(90, perf + perfVariation));
+                document.getElementById('performance').textContent = newPerf.toFixed(1) + '%';
+            }
+            
+            // Update stats every 10 seconds
+            setInterval(updateStats, 10000);
+            
+            // Notification bell click
+            document.querySelector('.notification-bell').addEventListener('click', function() {
+                const badge = this.querySelector('.notification-badge');
+                if (badge) {
+                    badge.style.transform = 'scale(0)';
+                    setTimeout(() => {
+                        badge.remove();
+                    }, 300);
+                }
+                
+                // Show notification dropdown (simulated)
+                alert('You have 3 unread notifications:\n1. Backup completed\n2. Storage alert\n3. Performance report ready');
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-box input');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && this.value.trim()) {
+                    alert(`Searching for: "${this.value}"`);
+                    this.value = '';
+                }
+            });
+            
+            // Chart buttons
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Service card clicks
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const serviceName = this.querySelector('h4').textContent;
+                    alert(`Opening details for: ${serviceName}`);
+                });
+            });
+            
+            // Action button functionality
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const action = this.querySelector('.action-text').textContent;
+                    
+                    switch(action) {
+                        case 'Refresh Data':
+                            e.preventDefault();
+                            updateStats();
+                            showToast('Data refreshed successfully!', 'success');
+                            break;
+                        case 'View Analytics':
+                            // Already linked to index.html
+                            break;
+                        case 'Export Report':
+                            e.preventDefault();
+                            showToast('Report export started...', 'info');
+                            setTimeout(() => {
+                                showToast('Report exported successfully!', 'success');
+                            }, 1500);
+                            break;
+                        case 'System Settings':
+                            e.preventDefault();
+                            showToast('Opening system settings...', 'info');
+                            break;
+                    }
+                });
+            });
+            
+            // Toast notification function
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                // Add styles
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                    color: white;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                `;
+                
+                document.body.appendChild(toast);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.style.animation = 'slideOut 0.3s ease forwards';
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            document.body.removeChild(toast);
+                        }
+                    }, 300);
+                }, 3000);
+            }
+            
+            // Add animation styles
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+                .chart-placeholder {
+                    height: 100%;
+                    display: flex;
+                    align-items: flex-end;
+                    gap: 10px;
+                    padding: 20px;
+                }
+                .chart-bar {
+                    flex: 1;
+                    border-radius: 4px;
+                    transition: height 0.3s ease;
+                }
+                .chart-bar:hover {
+                    opacity: 0.8;
+                }
+                .health-meters {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    padding: 20px;
+                }
+                .health-meter {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                }
+                .meter-label {
+                    width: 100px;
+                    color: #cbd5e1;
+                    font-size: 0.9rem;
+                }
+                .meter-bar {
+                    flex: 1;
+                    height: 8px;
+                    background: #334155;
+                    border-radius: 4px;
+                    overflow: hidden;
+                }
+                .meter-fill {
+                    height: 100%;
+                    border-radius: 4px;
+                    transition: width 0.3s ease;
+                }
+                .meter-value {
+                    width: 40px;
+                    text-align: right;
+                    color: #f1f5f9;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Animate chart bars
+            setTimeout(() => {
+                document.querySelectorAll('.chart-bar').forEach((bar, index) => {
+                    setTimeout(() => {
+                        const currentHeight = bar.style.height;
+                        bar.style.height = '0%';
+                        setTimeout(() => {
+                            bar.style.height = currentHeight;
+                        }, 50);
+                    }, index * 100);
+                });
+                
+                // Animate meter fills
+                document.querySelectorAll('.meter-fill').forEach((fill, index) => {
+                    setTimeout(() => {
+                        const currentWidth = fill.style.width;
+                        fill.style.width = '0%';
+                        setTimeout(() => {
+                            fill.style.width = currentWidth;
+                        }, 50);
+                    }, index * 150);
+                });
+            }, 500);
+            
+            // Initialize with random data
+            updateStats();
+        });
+    </script>
+</body>
+</html>

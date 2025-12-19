@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ===================================================== -->
+    <!-- CONFIGURATION SECTION - Loaded from config.json -->
+    <!-- ===================================================== -->
+    <script>
+        // Default configuration - will be overridden by ConfigSystem
+        const SERVER_STATUS = "PAR";
+        const SERVICE_HEALTH = "DEGRADED";
+        const SHOW_REPOSITORY = true;
+        const LOCKDOWN_ENABLED = true;
+    </script>
+
+    <div class="container">
+        <header>
+            <h1 class="header-title">System Status Dashboard</h1>
+            <p class="header-subtitle">Real-time monitoring and management of server infrastructure and services</p>
+        </header>
+
+        <!-- Configuration Display Banner -->
+        <div class="config-banner">
+            <div class="config-title">
+                <i class="fas fa-cog"></i>
+                Current Configuration
+            </div>
+            <div class="config-item">
+                <span class="config-name">SERVER_STATUS:</span>
+                <span class="config-value" id="config-server-status">"UP"</span>
+            </div>
+            <div class="config-item">
+                <span class="config-name">SERVICE_HEALTH:</span>
+                <span class="config-value" id="config-service-health">"UP"</span>
+            </div>
+            <div class="config-item">
+                <span class="config-name">SHOW_REPOSITORY:</span>
+                <span class="config-value" id="config-show-repo">false</span>
+            </div>
+            <div class="config-item" style="border-bottom: none; padding-top: 12px; font-size: 0.8rem; opacity: 0.7;">
+                <span>Edit these values in the &lt;script&gt; tag (lines 14-21)</span>
+            </div>
+        </div>
+
+        <nav>
+            <!-- NAVIGATION EXPANSION GUIDE -->
+            <a href="/" class="nav-link" id="home-link">
+                <i class="fas fa-home"></i>
+                Home
+            </a>
+            <a href="#" class="nav-link" id="contact-link">
+                <i class="fas fa-envelope"></i>
+                Contact Us
+            </a>
+            <a href="/dashboard" class="nav-link" id="dashboard-link">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="/analytics" class="nav-link" id="analytics-link">
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </a>
+        </nav>
+
+        <div class="dashboard">
+            <!-- Server Status Card -->
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-title">Server Status</div>
+                    <div class="status-indicator" id="server-status-indicator"></div>
+                </div>
+                <div class="status-details">
+                    <p id="server-status-description">All systems operational and running smoothly.</p>
+                    <p>Response time: &lt; 50ms | Uptime: 99.9%</p>
+                </div>
+                <div class="status-metrics">
+                    <div class="metric">
+                        <div class="metric-value" id="server-uptime-value">99.9%</div>
+                        <div class="metric-label">Uptime (30d)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-value" id="server-response-value">48ms</div>
+                        <div class="metric-label">Avg Response</div>
+                    </div>
+                </div>
+                
+                <div class="status-extra-metrics">
+                    <div class="extra-metric">
+                        <div class="extra-metric-value" id="server-load-value">32%</div>
+                        <div class="extra-metric-label">System Load</div>
+                    </div>
+                    <div class="extra-metric">
+                        <div class="extra-metric-value" id="server-users-value">1.2k</div>
+                        <div class="extra-metric-label">Active Users</div>
+                    </div>
+                    <div class="extra-metric">
+                        <div class="extra-metric-value" id="server-latency-value">25ms</div>
+                        <div class="extra-metric-label">Peak Latency</div>
+                    </div>
+                </div>
+
+                <div class="status-history">
+                    <div class="history-title">Recent Status History</div>
+                    <div id="server-history"></div>
+                </div>
+            </div>
+
+            <!-- Service Health Card -->
+            <div class="status-card">
+                <div class="status-header">
+                    <div class="status-title">Service Health</div>
+                    <div class="status-indicator" id="service-health-indicator"></div>
+                </div>
+                <div class="status-details">
+                    <p id="service-health-description">All core services are running optimally.</p>
+                    <ul style="margin-top: 15px; padding-left: 20px;">
+                        <li>API Gateway: <span class="service-status" id="service-1">●</span> Operational</li>
+                        <li>Database: <span class="service-status" id="service-2">●</span> Replicating</li>
+                        <li>Cache Layer: <span class="service-status" id="service-3">●</span> Active</li>
+                        <li>File Storage: <span class="service-status" id="service-4">●</span> Online</li>
+                    </ul>
+                </div>
+                
+                <div class="status-extra-metrics">
+                    <div class="extra-metric">
+                        <div class="extra-metric-value" id="service-latency-value">25ms</div>
+                        <div class="extra-metric-label">Avg Latency</div>
+                    </div>
+                    <div class="extra-metric">
+                        <div class="extra-metric-value" id="service-errors-value">0.01%</div>
+                        <div class="extra-metric-label">Error Rate</div>
+                    </div>
+                    <div class="extra-metric">
+                        <div class="extra-metric-value" id="service-throughput-value">1.2M</div>
+                        <div class="extra-metric-label">Throughput</div>
+                    </div>
+                </div>
+
+                <div class="status-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-up"></div>
+                        <span>Operational</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-partial"></div>
+                        <span>Partial</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-down"></div>
+                        <span>Down</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-degraded"></div>
+                        <span>Degraded</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-info"></div>
+                        <span>Info</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Control Panel</h2>
+            
+            <!-- Quick Actions -->
+            <div class="panel-section">
+                <h3 class="section-title"><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="button-group">
+                    <button class="btn btn-primary" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh Status
+                    </button>
+                    <button class="btn btn-secondary" id="logs-btn">
+                        <i class="fas fa-file-alt"></i>
+                        View Logs
+                    </button>
+                    <button class="btn btn-secondary" id="metrics-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        Detailed Metrics
+                    </button>
+                    <button class="btn btn-danger" id="maintenance-btn">
+                        <i class="fas fa-tools"></i>
+                        Maintenance Mode
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Real-time Logs Display -->
+            <div class="panel-section">
+                <h3 class="section-title"><i class="fas fa-stream"></i> Recent Logs</h3>
+                <div class="logs-container">
+                    <div class="logs-header">
+                        <div class="log-filter">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="info">Info</button>
+                            <button class="filter-btn" data-filter="warning">Warning</button>
+                            <button class="filter-btn" data-filter="error">Error</button>
+                            <button class="filter-btn" data-filter="debug">Debug</button>
+                        </div>
+                        <button class="btn btn-small" id="clear-logs-btn">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                    <div class="logs-list" id="logs-list">
+                        <!-- Logs will be dynamically inserted here -->
+                        <div class="log-entry info">
+                            <div class="log-time">10:25:43</div>
+                            <div class="log-level"><span class="log-badge info">INFO</span></div>
+                            <div class="log-message">System initialized successfully</div>
+                        </div>
+                        <div class="log-entry debug">
+                            <div class="log-time">10:25:45</div>
+                            <div class="log-level"><span class="log-badge debug">DEBUG</span></div>
+                            <div class="log-message">Loading configuration from localStorage</div>
+                        </div>
+                        <div class="log-entry warning">
+                            <div class="log-time">10:26:12</div>
+                            <div class="log-level"><span class="log-badge warning">WARN</span></div>
+                            <div class="log-message">Cache service running at 85% capacity</div>
+                        </div>
+                    </div>
+                    <div class="logs-controls">
+                        <div class="log-search">
+                            <input type="text" id="log-search-input" placeholder="Search logs...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="log-actions">
+                            <button class="btn btn-small" id="export-logs-btn">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                            <button class="btn btn-small" id="pause-logs-btn">
+                                <i class="fas fa-pause"></i> Pause
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Controls -->
+            <div class="panel-section">
+                <h3 class="section-title"><i class="fas fa-cogs"></i> System Controls</h3>
+                <div class="system-controls">
+                    <div class="control-item">
+                        <label class="control-label">Auto-refresh Interval</label>
+                        <div class="control-input">
+                            <select id="refresh-interval">
+                                <option value="10">10 seconds</option>
+                                <option value="30" selected>30 seconds</option>
+                                <option value="60">1 minute</option>
+                                <option value="300">5 minutes</option>
+                                <option value="0">Disabled</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">Log Level</label>
+                        <div class="control-input">
+                            <select id="log-level-select">
+                                <option value="debug">Debug (All logs)</option>
+                                <option value="info" selected>Info (Default)</option>
+                                <option value="warning">Warning & Errors</option>
+                                <option value="error">Errors Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">
+                            <input type="checkbox" id="notifications-toggle" checked>
+                            Enable Desktop Notifications
+                        </label>
+                    </div>
+                    <div class="control-item">
+                        <label class="control-label">
+                            <input type="checkbox" id="sound-alerts-toggle">
+                            Enable Sound Alerts
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="repo-section">
+            <a href="https://github.com/biswasasit14-max/Roup-PHP" class="repo-link" id="repo-link" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-github"></i>
+                View Source Repository
+            </a>
+        </div>
+
+        <footer>
+            <p>System Status Dashboard v3.0 | Last Updated: <span id="current-year">2024</span></p>
+            <p style="margin-top: 10px; font-size: 0.85rem;">Monitoring interval: 60 seconds | Auto-refresh: Enabled</p>
+        </footer>
+    </div>
+
+    <!-- Load in this order -->
+    <script src="script.js" defer></script>
+    <script src="logs.js" defer></script>
+    <script src="maintenance.js" defer></script>
+    <script src="lockdown.js" defer></script>
+</body>
+</html>

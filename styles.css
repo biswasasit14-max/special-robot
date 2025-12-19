@@ -9,8 +9,6 @@ a {
     color: white; 
 }
 
-.config-banner { display: none;}
-
 body {
     font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
     min-height: 100vh;
@@ -893,4 +891,5 @@ footer {
     .logs-list {
         max-height: 200px;
     }
+
 }

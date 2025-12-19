@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Analytics Report</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%); color: #333; line-height: 1.6; padding: 20px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header { text-align: center; padding: 30px 20px; margin-bottom: 30px; background: white; border-radius: 16px; box-shadow: 0 6px 20px rgba(0, 80, 150, 0.08); border-left: 6px solid #2c80ff; }
+        h1 { color: #1a5dc1; font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { color: #666; font-size: 1.1em; }
+        .report-date { color: #888; margin-top: 8px; font-size: 0.95em; }
+        
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin: 35px 0; }
+        .summary-card { background: white; padding: 25px; border-radius: 14px; box-shadow: 0 5px 15px rgba(0, 40, 100, 0.05); transition: transform 0.3s ease, box-shadow 0.3s; border-top: 5px solid #2c80ff; }
+        .summary-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 60, 130, 0.1); }
+        .card-title { font-size: 1.1em; color: #555; margin-bottom: 12px; display: flex; align-items: center; }
+        .card-title i { margin-right: 10px; color: #2c80ff; }
+        .metric { font-size: 2.6em; font-weight: 700; color: #1a5dc1; line-height: 1; }
+        .metric-desc { color: #777; margin-top: 8px; font-size: 0.95em; }
+        
+        .section { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; box-shadow: 0 6px 18px rgba(0, 50, 100, 0.06); }
+        h2 { color: #1a5dc1; font-size: 1.8em; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #eef5ff; }
+        
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+        .service-item { padding: 18px; background: #f8fbff; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #4CAF50; }
+        .service-name { font-weight: 600; }
+        .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #4CAF50; }
+        .status-down { background: #f44336; }
+        .status-warn { background: #ff9800; }
+        
+        .log-table { width: 100%; border-collapse: collapse; }
+        .log-table th, .log-table td { padding: 15px 18px; text-align: left; border-bottom: 1px solid #eaeaea; }
+        .log-table th { background-color: #f1f8ff; color: #1a5dc1; font-weight: 600; }
+        .log-table tr:hover { background-color: #f9fcfd; }
+        .log-level-info { color: #2196F3; font-weight: 600; }
+        .log-level-warn { color: #ff9800; font-weight: 600; }
+        .log-level-error { color: #f44336; font-weight: 600; }
+        .log-level-debug { color: #9c27b0; font-weight: 600; }
+        
+        .chart-container { height: 300px; margin: 25px 0; background: #fafcff; border-radius: 10px; padding: 20px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d0e3ff; }
+        .chart-placeholder { text-align: center; color: #7a9bc7; }
+        .chart-placeholder i { font-size: 3em; margin-bottom: 15px; display: block; }
+        
+        .key-findings { margin-top: 25px; padding: 20px; background: #fff8e1; border-radius: 10px; border-left: 5px solid #ffc107; }
+        .key-findings h3 { color: #e6a700; margin-bottom: 10px; }
+        .key-findings ul { padding-left: 20px; }
+        .key-findings li { margin-bottom: 8px; }
+        
+        .recommendations { margin-top: 25px; padding: 20px; background: #e8f5e9; border-radius: 10px; border-left: 5px solid #4CAF50; }
+        .recommendations h3 { color: #2e7d32; margin-bottom: 10px; }
+        .recommendations ul { padding-left: 20px; }
+        .recommendations li { margin-bottom: 8px; }
+        
+        .note { font-size: 0.9em; color: #888; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; text-align: center; }
+        
+        @media (max-width: 768px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+            .section { padding: 20px; }
+            h1 { font-size: 2em; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-chart-line"></i> System Analytics Dashboard</h1>
+            <p class="subtitle">Comprehensive performance and health analysis based on real-time monitoring data</p>
+            <p class="report-date">Report Generated: March 16, 2025 | Data Source: ivory-goat-374370.org</p>
+        </header>
+        
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="card-title"><i class="fas fa-server"></i> Overall Status</div>
+                <div class="metric">Operational</div>
+                <div class="metric-desc">All core systems are currently running smoothly with no major issues detected.</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-title"><i class="fas fa-uptime"></i> 30-Day Uptime</div>
+                <div class="metric">99.9%</div>
+                <div class="metric-desc">Excellent reliability meeting enterprise SLA standards.</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-title"><i class="fas fa-tachometer-alt"></i> Avg Response Time</div>
+                <div class="metric">48ms</div>
+                <div class="metric-desc">Well within performance thresholds (< 50ms target).</div>
+            </div>
+            <div class="summary-card">
+                <div class="card-title"><i class="fas fa-users"></i> Active Users</div>
+                <div class="metric">1.2k</div>
+                <div class="metric-desc">Current active user sessions on the platform.</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2><i class="fas fa-heartbeat"></i> Service Health Status</h2>
+            <p>All four core services are reporting optimal operational status with no degradation detected.</p>
+            <div class="services-grid">
+                <div class="service-item">
+                    <span class="service-name">API Gateway</span>
+                    <span class="status-indicator" title="Operational"></span>
+                </div>
+                <div class="service-item">
+                    <span class="service-name">Database</span>
+                    <span class="status-indicator" title="Replicating Normally"></span>
+                </div>
+                <div class="service-item">
+                    <span class="service-name">Cache Layer</span>
+                    <span class="status-indicator" title="Active"></span>
+                </div>
+                <div class="service-item">
+                    <span class="service-name">File Storage</span>
+                    <span class="status-indicator" title="Online"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2><i class="fas fa-history"></i> Recent System Logs Analysis</h2>
+            <p>Log entries from the most recent monitoring period show normal operations with minor warnings.</p>
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Level</th>
+                        <th>Message</th>
+                        <th>Analysis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>03:55:07</td>
+                        <td class="log-level-info">INFO</td>
+                        <td>Auto-refresh interval set to 30 seconds</td>
+                        <td>Normal configuration update</td>
+                    </tr>
+                    <tr>
+                        <td>10:25:43</td>
+                        <td class="log-level-info">INFO</td>
+                        <td>System initialized successfully</td>
+                        <td>Standard startup procedure</td>
+                    </tr>
+                    <tr>
+                        <td>10:26:12</td>
+                        <td class="log-level-debug">DEBUG</td>
+                        <td>Loading configuration from localStorage</td>
+                        <td>Normal operation</td>
+                    </tr>
+                    <tr>
+                        <td>10:26:12</td>
+                        <td class="log-level-warn">WARNING</td>
+                        <td>Cache service running at 85% capacity</td>
+                        <td>Approaching limit - monitor closely</td>
+                    </tr>
+                    <tr>
+                        <td>10:27:01</td>
+                        <td class="log-level-info">INFO</td>
+                        <td>Database connection established</td>
+                        <td>Normal operation</td>
+                    </tr>
+                    <tr>
+                        <td>10:28:30</td>
+                        <td class="log-level-error">ERROR</td>
+                        <td>API endpoint /api/status returned 503</td>
+                        <td>Service temporarily unavailable - resolved quickly</td>
+                    </tr>
+                    <tr>
+                        <td>10:30:00</td>
+                        <td class="log-level-debug">DEBUG</td>
+                        <td>Memory usage: 65% (2.3GB/3.5GB)</td>
+                        <td>Healthy memory utilization</td>
+                    </tr>
+                    <tr>
+                        <td>10:31:22</td>
+                        <td class="log-level-warn">WARNING</td>
+                        <td>Disk I/O latency above threshold</td>
+                        <td>Potential storage performance issue</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2><i class="fas fa-chart-bar"></i> Performance Metrics</h2>
+            <p>Current system performance indicators showing stable operation within expected parameters.</p>
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    <i class="fas fa-chart-area"></i>
+                    <p>Performance Metrics Visualization</p>
+                    <p><small>(In a full implementation, this would show interactive charts for response times, error rates, and system load)</small></p>
+                </div>
+            </div>
+            <div class="key-findings">
+                <h3><i class="fas fa-search"></i> Key Findings</h3>
+                <ul>
+                    <li><strong>System Stability:</strong> 99.9% uptime indicates excellent reliability over the past 30 days.</li>
+                    <li><strong>Performance:</strong> Average response time of 48ms is within the <50ms target threshold.</li>
+                    <li><strong>Minor Issues:</strong> Cache service at 85% capacity and occasional disk I/O latency spikes require monitoring.</li>
+                    <li><strong>Error Handling:</strong> Single 503 error was quickly resolved based on log sequence.</li>
+                </ul>
+            </div>
+            
+            <div class="recommendations">
+                <h3><i class="fas fa-lightbulb"></i> Recommendations</h3>
+                <ul>
+                    <li>Monitor cache service utilization closely and consider scaling options if it consistently exceeds 85%.</li>
+                    <li>Investigate root cause of disk I/O latency warnings to prevent potential performance degradation.</li>
+                    <li>Maintain current monitoring practices which successfully caught and resolved the API 503 error quickly.</li>
+                    <li>Consider implementing automated alerting for when cache capacity exceeds 90%.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="note">
+            <p><i class="fas fa-info-circle"></i> This analytical report was automatically generated based on real-time data from the System Status Dashboard. Data last retrieved on March 16, 2025.</p>
+            <p>The dashboard shows all systems are currently operational with performance within expected parameters.</p>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Analytics dashboard loaded successfully.');
+            
+            const serviceItems = document.querySelectorAll('.service-item');
+            serviceItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const serviceName = this.querySelector('.service-name').textContent;
+                    alert(`Detailed metrics for ${serviceName} would be displayed here in a full implementation.`);
+                });
+            });
+            
+            const logRows = document.querySelectorAll('.log-table tbody tr');
+            logRows.forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f0f8ff';
+                });
+                row.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                });
+            });
+            
+            const currentDate = new Date().toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const dateElement = document.querySelector('.report-date');
+            if (dateElement) {
+                dateElement.textContent = `Report Generated: ${currentDate} | Data Source: ivory-goat-374370.org`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -4,68 +4,271 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Analytics Report</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%); color: #333; line-height: 1.6; padding: 20px; }
-        
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        header { text-align: center; padding: 30px 20px; margin-bottom: 30px; background: white; border-radius: 16px; box-shadow: 0 6px 20px rgba(0, 80, 150, 0.08); border-left: 6px solid #2c80ff; }
-        h1 { color: #1a5dc1; font-size: 2.5em; margin-bottom: 10px; }
-        .subtitle { color: #666; font-size: 1.1em; }
-        .report-date { color: #888; margin-top: 8px; font-size: 0.95em; }
-        
-        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; margin: 35px 0; }
-        .summary-card { background: white; padding: 25px; border-radius: 14px; box-shadow: 0 5px 15px rgba(0, 40, 100, 0.05); transition: transform 0.3s ease, box-shadow 0.3s; border-top: 5px solid #2c80ff; }
-        .summary-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0, 60, 130, 0.1); }
-        .card-title { font-size: 1.1em; color: #555; margin-bottom: 12px; display: flex; align-items: center; }
-        .card-title i { margin-right: 10px; color: #2c80ff; }
-        .metric { font-size: 2.6em; font-weight: 700; color: #1a5dc1; line-height: 1; }
-        .metric-desc { color: #777; margin-top: 8px; font-size: 0.95em; }
-        
-        .section { background: white; border-radius: 16px; padding: 30px; margin-bottom: 30px; box-shadow: 0 6px 18px rgba(0, 50, 100, 0.06); }
-        h2 { color: #1a5dc1; font-size: 1.8em; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #eef5ff; }
-        
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
-        .service-item { padding: 18px; background: #f8fbff; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #4CAF50; }
-        .service-name { font-weight: 600; }
-        .status-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #4CAF50; }
-        .status-down { background: #f44336; }
-        .status-warn { background: #ff9800; }
-        
-        .log-table { width: 100%; border-collapse: collapse; }
-        .log-table th, .log-table td { padding: 15px 18px; text-align: left; border-bottom: 1px solid #eaeaea; }
-        .log-table th { background-color: #f1f8ff; color: #1a5dc1; font-weight: 600; }
-        .log-table tr:hover { background-color: #f9fcfd; }
-        .log-level-info { color: #2196F3; font-weight: 600; }
-        .log-level-warn { color: #ff9800; font-weight: 600; }
-        .log-level-error { color: #f44336; font-weight: 600; }
-        .log-level-debug { color: #9c27b0; font-weight: 600; }
-        
-        .chart-container { height: 300px; margin: 25px 0; background: #fafcff; border-radius: 10px; padding: 20px; display: flex; align-items: center; justify-content: center; border: 1px dashed #d0e3ff; }
-        .chart-placeholder { text-align: center; color: #7a9bc7; }
-        .chart-placeholder i { font-size: 3em; margin-bottom: 15px; display: block; }
-        
-        .key-findings { margin-top: 25px; padding: 20px; background: #fff8e1; border-radius: 10px; border-left: 5px solid #ffc107; }
-        .key-findings h3 { color: #e6a700; margin-bottom: 10px; }
-        .key-findings ul { padding-left: 20px; }
-        .key-findings li { margin-bottom: 8px; }
-        
-        .recommendations { margin-top: 25px; padding: 20px; background: #e8f5e9; border-radius: 10px; border-left: 5px solid #4CAF50; }
-        .recommendations h3 { color: #2e7d32; margin-bottom: 10px; }
-        .recommendations ul { padding-left: 20px; }
-        .recommendations li { margin-bottom: 8px; }
-        
-        .note { font-size: 0.9em; color: #888; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; text-align: center; }
-        
-        @media (max-width: 768px) {
-            .summary-grid { grid-template-columns: 1fr; }
-            .services-grid { grid-template-columns: 1fr; }
-            .section { padding: 20px; }
-            h1 { font-size: 2em; }
-        }
-    </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    * { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: border-box; 
+        font-family: 'Segoe UI', system-ui, sans-serif; 
+    }
+    
+    body { 
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); 
+        color: #e2e8f0; 
+        line-height: 1.6; 
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    .container { 
+        max-width: 1200px; 
+        margin: 0 auto; 
+    }
+    
+    header { 
+        text-align: center; 
+        padding: 30px 20px; 
+        margin-bottom: 30px; 
+        background: #1e293b; 
+        border-radius: 16px; 
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3); 
+        border-left: 6px solid #3b82f6;
+        border-right: 6px solid #3b82f6;
+    }
+    
+    h1 { 
+        color: #60a5fa; 
+        font-size: 2.5em; 
+        margin-bottom: 10px; 
+    }
+    
+    .subtitle { 
+        color: #94a3b8; 
+        font-size: 1.1em; 
+    }
+    
+    .report-date { 
+        color: #64748b; 
+        margin-top: 8px; 
+        font-size: 0.95em; 
+    }
+    
+    .summary-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+        gap: 22px; 
+        margin: 35px 0; 
+    }
+    
+    .summary-card { 
+        background: #1e293b; 
+        padding: 25px; 
+        border-radius: 14px; 
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); 
+        transition: transform 0.3s ease, box-shadow 0.3s; 
+        border-top: 5px solid #3b82f6; 
+        border: 1px solid #334155;
+    }
+    
+    .summary-card:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 10px 25px rgba(59, 130, 246, 0.15); 
+        border-color: #3b82f6;
+    }
+    
+    .card-title { 
+        font-size: 1.1em; 
+        color: #cbd5e1; 
+        margin-bottom: 12px; 
+        display: flex; 
+        align-items: center; 
+    }
+    
+    .card-title i { 
+        margin-right: 10px; 
+        color: #3b82f6; 
+    }
+    
+    .metric { 
+        font-size: 2.6em; 
+        font-weight: 700; 
+        color: #60a5fa; 
+        line-height: 1; 
+    }
+    
+    .metric-desc { 
+        color: #94a3b8; 
+        margin-top: 8px; 
+        font-size: 0.95em; 
+    }
+    
+    .section { 
+        background: #1e293b; 
+        border-radius: 16px; 
+        padding: 30px; 
+        margin-bottom: 30px; 
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2); 
+        border: 1px solid #334155;
+    }
+    
+    h2 { 
+        color: #60a5fa; 
+        font-size: 1.8em; 
+        margin-bottom: 20px; 
+        padding-bottom: 12px; 
+        border-bottom: 2px solid #334155; 
+    }
+    
+    .services-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
+        gap: 18px; 
+    }
+    
+    .service-item { 
+        padding: 18px; 
+        background: #0f172a; 
+        border-radius: 10px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-left: 4px solid #10b981; 
+        border: 1px solid #334155;
+    }
+    
+    .service-name { 
+        font-weight: 600; 
+        color: #e2e8f0;
+    }
+    
+    .status-indicator { 
+        display: inline-block; 
+        width: 12px; 
+        height: 12px; 
+        border-radius: 50%; 
+        background: #10b981; 
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    
+    .status-down { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+    .status-warn { background: #f59e0b; box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+    
+    .log-table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        background: #0f172a;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .log-table th, .log-table td { 
+        padding: 15px 18px; 
+        text-align: left; 
+        border-bottom: 1px solid #334155; 
+    }
+    
+    .log-table th { 
+        background-color: #1e293b; 
+        color: #60a5fa; 
+        font-weight: 600; 
+    }
+    
+    .log-table tr:hover { 
+        background-color: #1e293b; 
+    }
+    
+    .log-level-info { color: #60a5fa; font-weight: 600; }
+    .log-level-warn { color: #f59e0b; font-weight: 600; }
+    .log-level-error { color: #ef4444; font-weight: 600; }
+    .log-level-debug { color: #a855f7; font-weight: 600; }
+    
+    .chart-container { 
+        height: 300px; 
+        margin: 25px 0; 
+        background: #0f172a; 
+        border-radius: 10px; 
+        padding: 20px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        border: 1px dashed #475569; 
+    }
+    
+    .chart-placeholder { 
+        text-align: center; 
+        color: #64748b; 
+    }
+    
+    .chart-placeholder i { 
+        font-size: 3em; 
+        margin-bottom: 15px; 
+        display: block; 
+        color: #475569;
+    }
+    
+    .key-findings { 
+        margin-top: 25px; 
+        padding: 20px; 
+        background: rgba(251, 191, 36, 0.1); 
+        border-radius: 10px; 
+        border-left: 5px solid #f59e0b; 
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+    
+    .key-findings h3 { 
+        color: #f59e0b; 
+        margin-bottom: 10px; 
+    }
+    
+    .key-findings ul { 
+        padding-left: 20px; 
+    }
+    
+    .key-findings li { 
+        margin-bottom: 8px; 
+        color: #e2e8f0;
+    }
+    
+    .recommendations { 
+        margin-top: 25px; 
+        padding: 20px; 
+        background: rgba(16, 185, 129, 0.1); 
+        border-radius: 10px; 
+        border-left: 5px solid #10b981; 
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+    
+    .recommendations h3 { 
+        color: #10b981; 
+        margin-bottom: 10px; 
+    }
+    
+    .recommendations ul { 
+        padding-left: 20px; 
+    }
+    
+    .recommendations li { 
+        margin-bottom: 8px; 
+        color: #e2e8f0;
+    }
+    
+    .note { 
+        font-size: 0.9em; 
+        color: #94a3b8; 
+        margin-top: 30px; 
+        padding-top: 15px; 
+        border-top: 1px solid #334155; 
+        text-align: center; 
+    }
+    
+    @media (max-width: 768px) {
+        .summary-grid { grid-template-columns: 1fr; }
+        .services-grid { grid-template-columns: 1fr; }
+        .section { padding: 20px; }
+        h1 { font-size: 2em; }
+    }
+    </style>
 </head>
 <body>
     <div class="container">

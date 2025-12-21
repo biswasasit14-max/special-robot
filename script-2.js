@@ -1,6 +1,6 @@
 // ===== CONFIGURATION ZONE =====
 // Change weather here: "clear", "partial", "thunder", or "tempestas_innavigabilis"
-const WEATHER = "partial"; // CHANGE THIS VALUE
+const WEATHER = "tempestas-innavigabilis"; // CHANGE THIS VALUE
 
 // Define your destinations here
 // To add more destinations, simply add more objects to this array

@@ -1,6 +1,5 @@
 // ===== CONFIGURATION ZONE =====
-// Change weather here: "clear", "partial", "thunder", or "tempestas_innavigabilis"
-const WEATHER = "tempestas-innavigabilis"; // CHANGE THIS VALUE
+// Weather will be selected by user on page load via modal
 
 // Define your destinations here
 // To add more destinations, simply add more objects to this array
@@ -16,6 +15,7 @@ const DESTINATIONS = [
 ];
 // ==============================
 
+// DOM Elements
 const ocean = document.getElementById('ocean');
 const boat = document.getElementById('boat');
 const harborContainer = document.getElementById('harbor-container');
@@ -24,6 +24,7 @@ const lightningBolt = document.getElementById('lightning-bolt');
 const weatherDisplay = document.getElementById('current-weather');
 const weatherIcon = document.getElementById('weather-icon');
 const statusDisplay = document.getElementById('boat-status');
+const speedDisplay = document.getElementById('speed-display');
 const linkNav = document.getElementById('link-nav');
 const distanceDisplay = document.getElementById('distance-display');
 const integrityFill = document.getElementById('integrity-fill');
@@ -31,7 +32,15 @@ const integrityPercentage = document.getElementById('integrity-percentage');
 const splashContainer = document.getElementById('splash-container');
 const gameOver = document.getElementById('game-over');
 const restartBtn = document.getElementById('restart-btn');
+const weatherModal = document.getElementById('weather-modal');
 
+// On-screen control buttons
+const btnLeft = document.getElementById('btn-left');
+const btnRight = document.getElementById('btn-right');
+const btnStop = document.getElementById('btn-stop');
+const btnEnter = document.getElementById('btn-enter');
+
+// Game state variables
 let boatPosition = 100;
 let containerOffset = 0;
 let isMoving = false;
@@ -42,8 +51,13 @@ let lightningStrikeChance = 0;
 let totalDistance = 0;
 let boatIntegrity = 100;
 let isGameOver = false;
+let selectedWeather = null;
+let speedMultiplier = 1;
+let lastKeyPressTime = 0;
+let lastKeyPressed = null;
+const DOUBLE_TAP_THRESHOLD = 300; // milliseconds
 
-// Weather effects
+// Weather effects configuration
 const weatherEffects = {
     clear: { 
         speed: 3, 
@@ -59,7 +73,7 @@ const weatherEffects = {
     },
     partial: { 
         speed: 2, 
-        distanceMultiplier: 1.275, 
+        distanceMultiplier: 1.4, // +40%
         rain: true, 
         thunder: false, 
         disabled: false,
@@ -71,7 +85,7 @@ const weatherEffects = {
     },
     thunder: { 
         speed: 1.5, 
-        distanceMultiplier: 1.35, 
+        distanceMultiplier: 1.9, // +90%
         rain: true, 
         thunder: true, 
         disabled: true,
@@ -81,86 +95,130 @@ const weatherEffects = {
         icon: "⛈️",
         damagePerStrike: 7 // 5-10% damage
     },
-    tempestas_innavigabilis: { 
+    tempest: { 
         speed: 1, 
-        distanceMultiplier: 1.5, 
+        distanceMultiplier: 2.5, // +150%
         rain: true, 
         thunder: true, 
         disabled: true,
         bobIntensity: 40,
         lightningStrike: true,
-        displayName: "Tempestas Innavigabilis",
+        displayName: "Tempest",
         icon: "🌪️",
         damagePerStrike: 12 // 10-15% damage
     }
 };
 
-const currentWeather = weatherEffects[WEATHER] || weatherEffects.clear;
-const screenWidth = window.innerWidth;
-
-// Setup weather
-weatherDisplay.textContent = currentWeather.displayName;
-weatherIcon.textContent = currentWeather.icon;
-
-if (currentWeather.rain) {
-    rain.style.display = 'block';
-    const dropCount = WEATHER === 'tempestas_innavigabilis' ? 150 : 100;
-    for (let i = 0; i < dropCount; i++) {
-        const drop = document.createElement('div');
-        drop.className = 'raindrop';
-        drop.style.left = Math.random() * 100 + '%';
-        drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
-        drop.style.animationDelay = Math.random() * 2 + 's';
-        rain.appendChild(drop);
-    }
-}
-
-// Lightning strike mechanic
-if (currentWeather.lightningStrike) {
-    lightningStrikeChance = WEATHER === 'tempestas_innavigabilis' ? 0.004 : 0.002;
-}
-
-// Generate harbors
-const baseDistance = 600;
-let currentX = 400;
-
-DESTINATIONS.forEach((dest, index) => {
-    const distance = baseDistance * currentWeather.distanceMultiplier;
-    currentX += distance;
-
-    const harbor = document.createElement('div');
-    harbor.className = 'harbor';
-    if (currentWeather.disabled) {
-        harbor.classList.add('disabled');
-    }
-    harbor.style.left = currentX + 'px';
-    
-    const structure = document.createElement('div');
-    structure.className = 'harbor-structure';
-    
-    const roof = document.createElement('div');
-    roof.className = 'harbor-roof';
-    
-    const label = document.createElement('div');
-    label.className = 'harbor-label';
-    label.textContent = currentWeather.disabled ? `${dest.name} (Closed)` : dest.name;
-    
-    structure.appendChild(roof);
-    harbor.appendChild(structure);
-    harbor.appendChild(label);
-    harborContainer.appendChild(harbor);
-
-    harbor.addEventListener('click', () => {
-        if (!currentWeather.disabled && !isGameOver) {
-            window.location.href = dest.url;
-        }
+// Weather selection modal handlers
+document.querySelectorAll('.weather-option').forEach(option => {
+    option.addEventListener('click', () => {
+        const weather = option.getAttribute('data-weather');
+        startGame(weather);
     });
-
-    harbors.push({ element: harbor, x: currentX, destination: dest });
 });
 
-// Calculate total distance
-totalDistance = harbors[harbors.length - 1].x;
+// Start game with selected weather
+function startGame(weather) {
+    selectedWeather = weather;
+    const currentWeather = weatherEffects[selectedWeather];
+    
+    // Hide modal
+    weatherModal.classList.add('hidden');
+    
+    // Setup weather display
+    weatherDisplay.textContent = currentWeather.displayName;
+    weatherIcon.textContent = currentWeather.icon;
+    
+    // Setup rain
+    if (currentWeather.rain) {
+        rain.style.display = 'block';
+        const dropCount = selectedWeather === 'tempest' ? 150 : 100;
+        for (let i = 0; i < dropCount; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'raindrop';
+            drop.style.left = Math.random() * 100 + '%';
+            drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+            drop.style.animationDelay = Math.random() * 2 + 's';
+            rain.appendChild(drop);
+        }
+    }
+    
+    // Setup lightning strike chance
+    if (currentWeather.lightningStrike) {
+        lightningStrikeChance = selectedWeather === 'tempest' ? 0.004 : 0.002;
+    }
+    
+    // Generate harbors
+    generateHarbors(currentWeather);
+    
+    // Generate navigation links
+    generateNavigationLinks(currentWeather);
+    
+    // Initialize displays
+    updateDistanceMeter();
+    updateBoatIntegrity();
+    updateSpeedDisplay();
+    
+    // Start animation loop
+    animate();
+}
+
+// Generate harbors based on weather
+function generateHarbors(currentWeather) {
+    const baseDistance = 600;
+    let currentX = 400;
+
+    DESTINATIONS.forEach((dest, index) => {
+        const distance = baseDistance * currentWeather.distanceMultiplier;
+        currentX += distance;
+
+        const harbor = document.createElement('div');
+        harbor.className = 'harbor';
+        if (currentWeather.disabled) {
+            harbor.classList.add('disabled');
+        }
+        harbor.style.left = currentX + 'px';
+        
+        const structure = document.createElement('div');
+        structure.className = 'harbor-structure';
+        
+        const roof = document.createElement('div');
+        roof.className = 'harbor-roof';
+        
+        const label = document.createElement('div');
+        label.className = 'harbor-label';
+        label.textContent = currentWeather.disabled ? `${dest.name} (Closed)` : dest.name;
+        
+        structure.appendChild(roof);
+        harbor.appendChild(structure);
+        harbor.appendChild(label);
+        harborContainer.appendChild(harbor);
+
+        harbor.addEventListener('click', () => {
+            if (!currentWeather.disabled && !isGameOver) {
+                window.location.href = dest.url;
+            }
+        });
+
+        harbors.push({ element: harbor, x: currentX, destination: dest });
+    });
+
+    // Calculate total distance
+    totalDistance = harbors[harbors.length - 1].x;
+}
+
+// Generate quick navigation links
+function generateNavigationLinks(currentWeather) {
+    DESTINATIONS.forEach(dest => {
+        const link = document.createElement('a');
+        link.href = dest.url;
+        link.textContent = dest.name;
+        if (currentWeather.disabled) {
+            link.classList.add('disabled');
+        }
+        linkNav.appendChild(link);
+    });
+}
 
 // Update distance meter
 function updateDistanceMeter() {
@@ -191,9 +249,66 @@ function updateBoatIntegrity() {
     damageOverlay.style.opacity = (100 - boatIntegrity) / 100;
 }
 
+// Update speed display
+function updateSpeedDisplay() {
+    speedDisplay.textContent = speedMultiplier.toFixed(1) + 'x';
+}
+
+// Find nearest harbor
+function findNearestHarbor() {
+    let nearestHarbor = null;
+    let minDistance = Infinity;
+    
+    harbors.forEach(harbor => {
+        const harborScreenPos = harbor.x + containerOffset;
+        const distance = Math.abs(harborScreenPos - boatPosition);
+        
+        if (distance < minDistance) {
+            minDistance = distance;
+            nearestHarbor = harbor;
+        }
+    });
+    
+    return { harbor: nearestHarbor, distance: minDistance };
+}
+
+// Update harbor proximity indicators
+function updateHarborProximity() {
+    const { harbor: nearest, distance } = findNearestHarbor();
+    
+    harbors.forEach(harbor => {
+        harbor.element.classList.remove('nearby');
+        const harborScreenPos = harbor.x + containerOffset;
+        const dist = Math.abs(harborScreenPos - boatPosition);
+        
+        if (dist < 150) {
+            harbor.element.style.transform = 'scale(1.2)';
+            if (harbor === nearest && dist < 100) {
+                harbor.element.classList.add('nearby');
+            }
+        } else {
+            harbor.element.style.transform = 'scale(1)';
+        }
+    });
+}
+
+// Navigate to nearest harbor
+function navigateToNearestHarbor() {
+    const currentWeather = weatherEffects[selectedWeather];
+    if (currentWeather.disabled || isGameOver) return;
+    
+    const { harbor: nearest, distance } = findNearestHarbor();
+    
+    if (nearest && distance < 100) {
+        window.location.href = nearest.destination.url;
+    }
+}
+
 // Lightning strike function
 function strikeBoat() {
     if (isGameOver) return;
+    
+    const currentWeather = weatherEffects[selectedWeather];
     
     // Position lightning bolt above boat
     const boatRect = boat.getBoundingClientRect();
@@ -218,7 +333,7 @@ function strikeBoat() {
     updateBoatIntegrity();
     
     // Push boat back
-    const pushBackAmount = WEATHER === 'tempestas_innavigabilis' ? 300 : 200;
+    const pushBackAmount = selectedWeather === 'tempest' ? 300 : 200;
     containerOffset += pushBackAmount;
     
     // Check if boat is destroyed
@@ -256,48 +371,122 @@ restartBtn.addEventListener('click', () => {
     location.reload();
 });
 
-updateDistanceMeter();
-updateBoatIntegrity();
-
-// Generate quick navigation links
-DESTINATIONS.forEach(dest => {
-    const link = document.createElement('a');
-    link.href = dest.url;
-    link.textContent = dest.name;
-    if (currentWeather.disabled) {
-        link.classList.add('disabled');
+// Handle movement with acceleration
+function handleMovement(direction, key) {
+    if (isGameOver) return;
+    
+    const currentTime = Date.now();
+    const timeSinceLastPress = currentTime - lastKeyPressTime;
+    
+    // Check for double tap
+    if (lastKeyPressed === key && timeSinceLastPress < DOUBLE_TAP_THRESHOLD) {
+        speedMultiplier = 1.5; // 50% acceleration
+    } else {
+        speedMultiplier = 1;
     }
-    linkNav.appendChild(link);
-});
+    
+    lastKeyPressTime = currentTime;
+    lastKeyPressed = key;
+    
+    moveDirection = direction;
+    isMoving = true;
+    updateSpeedDisplay();
+    statusDisplay.textContent = direction === 1 ? 'Moving Forward' : 'Moving Backward';
+}
+
+// Stop movement
+function stopMovement() {
+    if (isGameOver) return;
+    
+    isMoving = false;
+    moveDirection = 0;
+    speedMultiplier = 1;
+    updateSpeedDisplay();
+    statusDisplay.textContent = 'Stopped';
+}
 
 // Keyboard controls
 document.addEventListener('keydown', (e) => {
-    if (isGameOver) return;
+    if (isGameOver || !selectedWeather) return;
     
     if (e.key === 'ArrowRight') {
-        moveDirection = 1;
-        isMoving = true;
-        statusDisplay.textContent = 'Moving Forward';
+        e.preventDefault();
+        handleMovement(1, 'right');
     } else if (e.key === 'ArrowLeft') {
-        moveDirection = -1;
-        isMoving = true;
-        statusDisplay.textContent = 'Moving Backward';
+        e.preventDefault();
+        handleMovement(-1, 'left');
     } else if (e.key === ' ') {
         e.preventDefault();
-        isMoving = false;
-        moveDirection = 0;
-        statusDisplay.textContent = 'Stopped';
+        stopMovement();
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        navigateToNearestHarbor();
     }
+});
+
+// On-screen button controls
+btnRight.addEventListener('mousedown', () => {
+    handleMovement(1, 'right');
+    btnRight.classList.add('active');
+});
+
+btnRight.addEventListener('mouseup', () => {
+    btnRight.classList.remove('active');
+});
+
+btnRight.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleMovement(1, 'right');
+    btnRight.classList.add('active');
+});
+
+btnRight.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    btnRight.classList.remove('active');
+});
+
+btnLeft.addEventListener('mousedown', () => {
+    handleMovement(-1, 'left');
+    btnLeft.classList.add('active');
+});
+
+btnLeft.addEventListener('mouseup', () => {
+    btnLeft.classList.remove('active');
+});
+
+btnLeft.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    handleMovement(-1, 'left');
+    btnLeft.classList.add('active');
+});
+
+btnLeft.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    btnLeft.classList.remove('active');
+});
+
+btnStop.addEventListener('click', () => {
+    stopMovement();
+});
+
+btnEnter.addEventListener('click', () => {
+    navigateToNearestHarbor();
 });
 
 // Animation loop
 function animate() {
+    if (!selectedWeather) return;
+    
+    const currentWeather = weatherEffects[selectedWeather];
+    
     if (isMoving && !isGameOver) {
         // Check for lightning strike
         if (currentWeather.lightningStrike && Math.random() < lightningStrikeChance) {
             strikeBoat();
             isMoving = false;
             moveDirection = 0;
+            speedMultiplier = 1;
+            updateSpeedDisplay();
             statusDisplay.textContent = 'Struck by Lightning!';
             
             setTimeout(() => {
@@ -307,8 +496,9 @@ function animate() {
             }, 2000);
         }
 
-        // Move the harbor container (background) in opposite direction
-        containerOffset -= moveDirection * currentWeather.speed;
+        // Move the harbor container with speed multiplier
+        const actualSpeed = currentWeather.speed * speedMultiplier;
+        containerOffset -= moveDirection * actualSpeed;
         
         // Set bounds for container movement
         const maxOffset = 0;
@@ -328,20 +518,11 @@ function animate() {
         const baseBottom = window.innerWidth <= 768 ? 60 : 80;
         boat.style.bottom = (baseBottom + ripple) + 'px';
 
-        // Check proximity to harbors
-        harbors.forEach(harbor => {
-            const harborScreenPos = harbor.x + containerOffset;
-            const distance = Math.abs(harborScreenPos - boatPosition);
-            
-            if (distance < 100) {
-                harbor.element.style.transform = 'scale(1.2)';
-            } else {
-                harbor.element.style.transform = 'scale(1)';
-            }
-        });
+        // Update harbor proximity
+        updateHarborProximity();
     }
 
     requestAnimationFrame(animate);
 }
 
-animate();
+// Initialize the game (weather modal will be shown automatically)

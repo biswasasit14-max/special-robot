@@ -10,6 +10,107 @@ body {
     background: linear-gradient(to bottom, #87CEEB 0%, #4A90B5 100%);
 }
 
+/* Weather Selection Modal */
+.weather-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.weather-modal.hidden {
+    display: none;
+}
+
+.weather-modal-content {
+    background: linear-gradient(135deg, #1e5a7d 0%, #0d2b3d 100%);
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 1200px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 3px solid #4A90B5;
+}
+
+.weather-modal-content h2 {
+    color: white;
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.weather-note {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+.weather-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.weather-option {
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(74, 144, 181, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.weather-option:hover {
+    background: rgba(74, 144, 181, 0.2);
+    border-color: #4A90B5;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(74, 144, 181, 0.4);
+}
+
+.weather-icon-large {
+    font-size: 64px;
+    margin-bottom: 15px;
+}
+
+.weather-option h3 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.weather-option p {
+    color: #ccc;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.weather-option ul {
+    list-style: none;
+    text-align: left;
+    color: #aaa;
+}
+
+.weather-option ul li {
+    padding: 5px 0;
+    font-size: 13px;
+}
+
+.weather-option ul li:before {
+    content: "• ";
+    color: #4A90B5;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 #ocean {
     width: 100%;
     height: 100vh;
@@ -166,6 +267,91 @@ body {
     50% { opacity: 1; }
 }
 
+/* On-screen Controls */
+#on-screen-controls {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    z-index: 20;
+}
+
+.control-center {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.control-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(74, 144, 181, 0.7);
+    border: 3px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.control-btn:hover {
+    background: rgba(74, 144, 181, 0.9);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(74, 144, 181, 0.8);
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+}
+
+.control-btn.active {
+    background: rgba(34, 197, 94, 0.8);
+    border-color: rgba(34, 197, 94, 1);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+}
+
+/* Control Legend */
+#control-legend {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.85);
+    padding: 15px 20px;
+    border-radius: 10px;
+    border: 2px solid rgba(74, 144, 181, 0.5);
+    z-index: 100;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 5px 0;
+    color: white;
+    font-size: 13px;
+}
+
+.legend-key {
+    background: rgba(74, 144, 181, 0.3);
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    border: 1px solid rgba(74, 144, 181, 0.6);
+    min-width: 60px;
+    text-align: center;
+}
+
+.legend-text {
+    color: #ccc;
+}
+
 #splash-container {
     position: absolute;
     bottom: 80px;
@@ -227,6 +413,11 @@ body {
     transform: scale(1.1);
 }
 
+.harbor.nearby {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 15px rgba(74, 144, 181, 0.8));
+}
+
 .harbor-structure {
     width: 100%;
     height: 60px;
@@ -260,6 +451,11 @@ body {
     pointer-events: none;
 }
 
+.harbor.nearby .harbor-label {
+    background: rgba(34, 197, 94, 0.9);
+    font-weight: bold;
+}
+
 .harbor.disabled {
     opacity: 0.3;
     cursor: not-allowed;
@@ -269,33 +465,6 @@ body {
     background: rgba(255,0,0,0.7);
 }
 
-/* MOVED CONTROLS FROM BOTTOM-LEFT TO TOP-LEFT */
-#controls {
-    position: fixed;
-    top: 20px; /* Changed from bottom: 20px */
-    left: 20px; /* Kept left position */
-    background: rgba(0,0,0,0.85);
-    color: white;
-    padding: 15px 20px;
-    border-radius: 10px;
-    font-size: 13px;
-    z-index: 100;
-    border: 2px solid rgba(74, 144, 181, 0.5);
-    max-width: 300px;
-    backdrop-filter: blur(5px);
-}
-
-.control-key {
-    display: inline-block;
-    background: rgba(74, 144, 181, 0.3);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: bold;
-    border: 1px solid rgba(74, 144, 181, 0.6);
-    margin-right: 5px;
-}
-
-/* ADJUSTED WEATHER INFO POSITION */
 #weather-info {
     position: absolute;
     top: 20px;
@@ -307,8 +476,6 @@ body {
     font-size: 14px;
     z-index: 100;
     border: 2px solid rgba(74, 144, 181, 0.5);
-    max-width: 250px;
-    backdrop-filter: blur(5px);
 }
 
 .weather-header {
@@ -346,7 +513,6 @@ body {
     }
 }
 
-/* ADJUSTED LINK NAV POSITION */
 #link-nav {
     position: absolute;
     top: 50%;
@@ -357,8 +523,6 @@ body {
     border-radius: 10px;
     z-index: 100;
     border: 2px solid rgba(74, 144, 181, 0.5);
-    max-width: 200px;
-    backdrop-filter: blur(5px);
 }
 
 #link-nav a {
@@ -384,10 +548,9 @@ body {
     pointer-events: none;
 }
 
-/* ADJUSTED DISTANCE METER POSITION */
 #distance-meter {
     position: absolute;
-    top: 90px; /* Moved down to avoid overlap with controls */
+    top: 120px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0,0,0,0.85);
@@ -400,7 +563,6 @@ body {
     text-align: center;
     min-width: 300px;
     border: 2px solid rgba(74, 144, 181, 0.5);
-    backdrop-filter: blur(5px);
 }
 
 #distance-meter .label {
@@ -414,10 +576,9 @@ body {
     color: #4A90B5;
 }
 
-/* ADJUSTED BOAT INTEGRITY POSITION */
 #boat-integrity {
     position: absolute;
-    top: 160px; /* Moved down to avoid overlap with distance meter */
+    top: 120px;
     right: 20px;
     background: rgba(0,0,0,0.85);
     color: white;
@@ -427,7 +588,6 @@ body {
     z-index: 100;
     min-width: 200px;
     border: 2px solid rgba(74, 144, 181, 0.5);
-    backdrop-filter: blur(5px);
 }
 
 #boat-integrity .label {
@@ -481,17 +641,6 @@ body {
     50% { opacity: 0.5; }
 }
 
-/* ADDED CLEAR BOAT VIEW AREA */
-.boat-view-area {
-    position: absolute;
-    bottom: 80px;
-    left: 100px;
-    right: 300px; /* Make space for UI elements */
-    top: 250px; /* Make space for top UI elements */
-    z-index: 1;
-    pointer-events: none;
-}
-
 #game-over {
     position: fixed;
     top: 0;
@@ -516,7 +665,6 @@ body {
     text-align: center;
     border: 3px solid #4A90B5;
     animation: fadeIn 0.5s ease-out;
-    backdrop-filter: blur(10px);
 }
 
 @keyframes fadeIn {
@@ -557,89 +705,6 @@ body {
 #restart-btn:hover {
     background: #5ba3ca;
     transform: scale(1.05);
-}
-
-/* ADDED UI LAYOUT FOR BETTER VISIBILITY */
-.ui-top-left {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    z-index: 100;
-}
-
-.ui-top-right {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    z-index: 100;
-}
-
-.ui-center-top {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-}
-
-.ui-center-bottom {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-}
-
-/* ENSURE BOAT IS ALWAYS VISIBLE */
-#boat {
-    z-index: 50;
-}
-
-.harbor {
-    z-index: 40;
-}
-
-/* RESPONSIVE ADJUSTMENTS */
-@media (max-width: 1200px) {
-    #controls {
-        max-width: 250px;
-    }
-    
-    #weather-info {
-        max-width: 200px;
-    }
-    
-    #distance-meter {
-        min-width: 250px;
-        top: 80px;
-    }
-}
-
-@media (max-width: 992px) {
-    .ui-top-left, .ui-top-right {
-        gap: 10px;
-    }
-    
-    #controls, #weather-info {
-        padding: 12px;
-        font-size: 12px;
-    }
-    
-    #distance-meter {
-        padding: 12px 20px;
-        font-size: 16px;
-        min-width: 200px;
-    }
-    
-    #distance-meter .distance {
-        font-size: 20px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -683,119 +748,12 @@ body {
         padding: 3px 6px;
     }
 
-    /* STACK UI ELEMENTS VERTICALLY ON MOBILE */
-    .ui-top-left {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-        flex-direction: column;
-    }
-    
-    .ui-top-right {
-        top: 180px; /* Move below controls */
-        right: 10px;
-        left: 10px;
-        flex-direction: column;
-    }
-    
-    .ui-center-top {
-        top: 280px; /* Move further down */
-        width: 90%;
-    }
-    
-    #controls, #weather-info, #boat-integrity {
+    #weather-info, #boat-integrity, #control-legend {
         font-size: 11px;
         padding: 10px;
-        width: 100%;
-        max-width: none;
     }
-    
+
     #link-nav {
-        display: none; /* Hide on mobile for more space */
-    }
-    
-    #distance-meter {
-        min-width: 200px;
-        padding: 10px 20px;
-        top: 100px;
-    }
-    
-    #distance-meter .distance {
-        font-size: 18px;
-    }
-
-    .game-over-content {
-        padding: 30px;
-        margin: 20px;
-    }
-
-    .game-over-content h1 {
-        font-size: 32px;
-    }
-
-    .game-over-content p {
-        font-size: 16px;
-    }
-    
-    /* MAKE MORE SPACE FOR BOAT */
-    .boat-view-area {
+        font-size: 12px;
+        padding: 10px;
         left: 10px;
-        right: 10px;
-        top: 350px; /* More space for stacked UI */
-        bottom: 60px;
-    }
-}
-
-@media (max-width: 480px) {
-    #controls, #weather-info {
-        font-size: 10px;
-        padding: 8px;
-    }
-    
-    #distance-meter {
-        font-size: 14px;
-        padding: 8px 15px;
-        min-width: 180px;
-    }
-    
-    #distance-meter .distance {
-        font-size: 16px;
-    }
-    
-    .boat-view-area {
-        top: 400px; /* Even more space for mobile */
-    }
-}
-
-/* ADDED VISUAL ENHANCEMENTS FOR BETTER BOAT VISIBILITY */
-#boat::after {
-    content: '';
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
-    background: rgba(74, 144, 181, 0.1);
-    border-radius: 50%;
-    z-index: -1;
-    animation: boat-glow 3s ease-in-out infinite;
-}
-
-@keyframes boat-glow {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 0.8; transform: scale(1.05); }
-}
-
-/* HIGH CONTRAST MODE FOR ACCESSIBILITY */
-.high-contrast #boat,
-.high-contrast .harbor {
-    filter: drop-shadow(0 0 5px white);
-}
-
-.high-contrast #controls,
-.high-contrast #weather-info,
-.high-contrast #boat-integrity,
-.high-contrast #distance-meter {
-    background: rgba(0,0,0,0.95);
-    border: 3px solid white;
-}

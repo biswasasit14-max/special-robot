@@ -8,6 +8,62 @@
     <script src="script-2.js" defer></script>
 </head>
 <body>
+    <!-- Weather Selection Modal -->
+    <div id="weather-modal" class="weather-modal">
+        <div class="weather-modal-content">
+            <h2>🌤️ Select Weather Condition</h2>
+            <p class="weather-note">Weather affects speed, distance, and hazards. Choose wisely!</p>
+            
+            <div class="weather-options">
+                <div class="weather-option" data-weather="clear">
+                    <div class="weather-icon-large">☀️</div>
+                    <h3>Clear</h3>
+                    <p>Perfect sailing conditions</p>
+                    <ul>
+                        <li>Normal speed</li>
+                        <li>Normal distances</li>
+                        <li>No hazards</li>
+                    </ul>
+                </div>
+
+                <div class="weather-option" data-weather="partial">
+                    <div class="weather-icon-large">🌧️</div>
+                    <h3>Partial (Rainy)</h3>
+                    <p>Light rain and reduced visibility</p>
+                    <ul>
+                        <li>Slower speed</li>
+                        <li>+40% distance</li>
+                        <li>No damage</li>
+                    </ul>
+                </div>
+
+                <div class="weather-option" data-weather="thunder">
+                    <div class="weather-icon-large">⛈️</div>
+                    <h3>Thunder Storm</h3>
+                    <p>Dangerous conditions ahead!</p>
+                    <ul>
+                        <li>Slow speed</li>
+                        <li>+90% distance</li>
+                        <li>Lightning strikes (5-10% damage)</li>
+                        <li>Harbors closed</li>
+                    </ul>
+                </div>
+
+                <div class="weather-option" data-weather="tempest">
+                    <div class="weather-icon-large">🌪️</div>
+                    <h3>Tempest</h3>
+                    <p>Extreme peril - not recommended!</p>
+                    <ul>
+                        <li>Very slow speed</li>
+                        <li>+150% distance</li>
+                        <li>Frequent lightning (10-15% damage)</li>
+                        <li>Harbors closed</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="ocean">
         <div class="wave"></div>
         <div class="wave"></div>
@@ -29,6 +85,32 @@
         <svg id="lightning-bolt" class="lightning-bolt" viewBox="0 0 50 100" xmlns="http://www.w3.org/2000/svg">
             <path d="M25 0 L15 40 L30 40 L20 100 L40 45 L28 45 Z" fill="#FFD700" stroke="#FFF" stroke-width="1"/>
         </svg>
+
+        <!-- On-screen controls -->
+        <div id="on-screen-controls">
+            <button class="control-btn" id="btn-left" data-key="left">←</button>
+            <div class="control-center">
+                <button class="control-btn" id="btn-stop" data-key="stop">⏸</button>
+                <button class="control-btn" id="btn-enter" data-key="enter">⏎</button>
+            </div>
+            <button class="control-btn" id="btn-right" data-key="right">→</button>
+        </div>
+    </div>
+
+    <!-- Control Legend -->
+    <div id="control-legend">
+        <div class="legend-item">
+            <span class="legend-key">← →</span>
+            <span class="legend-text">Move (Double tap to accelerate 50%)</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-key">Space</span>
+            <span class="legend-text">Stop</span>
+        </div>
+        <div class="legend-item">
+            <span class="legend-key">Enter</span>
+            <span class="legend-text">Navigate to nearest harbor</span>
+        </div>
     </div>
 
     <div id="distance-meter">
@@ -44,20 +126,13 @@
         <div class="percentage" id="integrity-percentage">100%</div>
     </div>
 
-    <div id="controls">
-        <strong>🎮 Controls</strong><br>
-        <span class="control-key">→</span> Move Forward<br>
-        <span class="control-key">←</span> Move Backward<br>
-        <span class="control-key">Space</span> Stop<br>
-        <span class="control-key">Click</span> Navigate to Harbor
-    </div>
-
     <div id="weather-info">
         <div class="weather-header">
             <span class="weather-icon" id="weather-icon">☀️</span>
             <strong>Weather:</strong> <span id="current-weather">Clear</span>
         </div>
-        <strong>Status:</strong> <span id="boat-status">Stopped</span>
+        <strong>Status:</strong> <span id="boat-status">Stopped</span><br>
+        <strong>Speed:</strong> <span id="speed-display">1x</span>
     </div>
 
     <div id="link-nav">
